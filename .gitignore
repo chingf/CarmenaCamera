@@ -1,0 +1,4 @@
+VideoCapture.xcodeproj/xcuserdata
+VideoCapture.xcodeproj/project.xcworkspace/xcuserdata
+Resources/*.mat
+.DS_Store
