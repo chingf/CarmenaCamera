@@ -239,7 +239,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     
     // variables to implement sliding z-score calculation
     var samplingRate = 30 // number of samples per second
-    var timeWindow = 1 // in minutes
+    var timeWindow = 0 // in minutes
     var samplesPerWindow = 0
     var inputBuffer: [[Float]] = [] // For N ROIs, this will be a (SAMPLESPERWINDOW x N) sized array
     var bufferIndex = 0
@@ -250,7 +250,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     var newestInput: [Float] = []
     var m2n: [Float] = [] // For use when buffer is not yet full, when using Welford's algorithm (see wiki link)
     var numSamples = 0 // NOTE: this variable is not updated once equal to samplesPerWindow
-    var zScoresTimeWindow = 500 // in milliseconds
+    var zScoresTimeWindow = 0// in milliseconds
     var zScoresSamplesPerWindow = 0
     var zScores: [Float] = []
     var zScoresBuffer: [[Float]] = []
@@ -258,6 +258,11 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     var zScoresSmoothed: [Float] = []
     var monitoring: Bool = false
     var capturing: Bool = false
+    var e1ROIs: Set<Int> = [] // Tracks which rows belong to E1
+    var e2ROIs: Set<Int> = [] // Tracks which rows belong to E2
+    var activationThreshold: Float = 0 // TTL pulse will be given when (E1 activity - E1 activity) > ACTIVATIONTHRESHOLD
+    var resetThreshold: Float = 0 // TTL pulse will only be given when (E1 activity - E1 activity) resets to RESETTHRESHOLD
+    var reset: Bool = false
     
     // timer to redraw interface (saves time)
     var timerRedraw: Timer?
@@ -1287,6 +1292,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     /// Stops current capture session. Will return to monitoring if automatically triggered, otherwise will return to configuration mode.
     func stopCapturing() {
         capturing = false;
+        tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
         
         guard mode.isCapturing() else {
             return
@@ -1386,6 +1392,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     
     func stopMonitoring() {
         monitoring = false;
+        tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
         
         guard mode.isMonitoring() else {
             return
@@ -2224,6 +2231,23 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             // Update values for the next iteration
             inputBuffer[bufferIndex] = newestInput
             bufferIndex = (bufferIndex + 1) % samplesPerWindow
+            
+            // Check the TTL Rule to see if a reward should be given
+            var e1 = Float(0.0)
+            var e2 = Float(0.0)
+            for row_idx in e1ROIs {
+                e1 += zScoresSmoothed[row_idx]
+            }
+            for row_idx in e2ROIs {
+                e2 += zScoresSmoothed[row_idx]
+            }
+            if (e1 - e2) <= resetThreshold {
+                reset = true
+            }
+            if ((e1 - e2) > activationThreshold) && (reset) {
+                //send TTL Pulse
+                reset = false
+            }
         }
 
         
@@ -2443,6 +2467,12 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     
     // Function to reset or initialize variables for use in z-score calculation.
     func initZScoreVariables() {
+        e1ROIs = Set<Int>()
+        e2ROIs = Set<Int>()
+        timeWindow = appPreferences.timeWindow
+        zScoresTimeWindow = appPreferences.zScoresTimeWindow
+        activationThreshold = appPreferences.activationThreshold
+        resetThreshold = appPreferences.resetThreshold
         samplesPerWindow = samplingRate * timeWindow * 60
         mean = [Float](repeating: 0.0, count: extractNames.count)
         variance = [Float](repeating: 0.0, count: extractNames.count)
@@ -2455,6 +2485,8 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         zScoresBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: zScoresSamplesPerWindow)
         zScoresSmoothed = [Float](repeating: 0.0, count: extractNames.count)
         inputBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: samplesPerWindow)
+        reset = true
+        tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
     }
 }
 
@@ -2474,6 +2506,8 @@ extension ViewController: NSTableViewDataSource {
         switch (tableColumn?.identifier.rawValue) {
         case "color":
             if row < annotView.annotations.count {
+                let result = tableView.makeView(withIdentifier:(tableColumn?.identifier)!, owner: self) as! NSTableCellView
+                //result.objectValue.draw()
                 return annotView.annotations[row].color
             }
             return nil
@@ -2493,24 +2527,40 @@ extension ViewController: NSTableViewDataSource {
             return nil
         case "z_score":
             if (row < extractValues.count) && (capturing || monitoring) {
-                if (row+1) <= zScoresSmoothed.count {
-                    return nil
-                } else {
-                    let result = tableView.makeView(withIdentifier:(tableColumn?.identifier)!, owner: self) as! NSTableCellView
-                    result.textField?.stringValue = String(zScoresSmoothed[row])
-                    return result
-                }
+                let result = tableView.makeView(withIdentifier:(tableColumn?.identifier)!, owner: self) as! NSTableCellView
+                result.textField?.stringValue = String(zScoresSmoothed[row])
+                return result
             }
+            return nil
+        case "e1":
+            let e1ID = NSUserInterfaceItemIdentifier(rawValue: "e1")
+            let e1State:NSButton = tableView.makeView(withIdentifier: e1ID, owner: self) as! NSButton
+            if (row < extractValues.count) && (capturing || monitoring) {
+                let ON = NSControl.StateValue.on
+                if (e1State.state == ON) {
+                    e1ROIs.insert(row)
+                }
+                e1State.isEnabled = false
+                return e1State
+            }
+            e1State.isEnabled = true
+            return nil
+        case "e2":
+            let e2ID = NSUserInterfaceItemIdentifier(rawValue: "e2")
+            let e2State:NSButton = tableView.makeView(withIdentifier: e2ID, owner: self) as! NSButton
+            if (row < extractValues.count) && (capturing || monitoring) {
+                let ON = NSControl.StateValue.on
+                if (e2State.state == ON) {
+                    e2ROIs.insert(row)
+                }
+                e2State.isEnabled = false
+                return e2State
+            }
+            e2State.isEnabled = true
             return nil
         default:
             return nil
         }
-//        if (tableColumn?.identifier.rawValue == "value") || (tableColumn?.identifier.rawValue == "z_score") {
-//            let result = tableView.makeView(withIdentifier:(tableColumn?.identifier)!, owner: self) as! NSTableCellView
-//            result.textField?.stringValue = "bah"
-//            return result
-//        }
-//        return nil
     }
     
     func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
