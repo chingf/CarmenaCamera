@@ -2486,6 +2486,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         zScoresSmoothed = [Float](repeating: 0.0, count: extractNames.count)
         inputBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: samplesPerWindow)
         reset = true
+        //tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(0..<1))
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
     }
 }
@@ -2505,9 +2506,12 @@ extension ViewController: NSTableViewDataSource {
         
         switch (tableColumn?.identifier.rawValue) {
         case "color":
-            if row < annotView.annotations.count {
-                let result = tableView.makeView(withIdentifier:(tableColumn?.identifier)!, owner: self) as! NSTableCellView
-                //result.objectValue.draw()
+            if (row < annotView.annotations.count) {
+                let colorWell:NSColorWell = tableView.makeView(withIdentifier: (tableColumn?.identifier)!, owner: self) as! NSColorWell
+                let color = annotView.annotations[row].color as NSColor
+                color.set()
+                color.setFill()
+                colorWell.activate(true)
                 return annotView.annotations[row].color
             }
             return nil

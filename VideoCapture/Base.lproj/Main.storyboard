@@ -1285,7 +1285,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" rowSizeStyle="small" headerView="vm2-5k-HNv" viewBased="YES" id="ur6-Ur-zr2">
-                                            <rect key="frame" x="0.0" y="-162" width="521" height="127"/>
+                                            <rect key="frame" x="0.0" y="-189" width="521" height="127"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <size key="intercellSpacing" width="3" height="3"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1299,24 +1299,11 @@
                                                     </tableHeaderCell>
                                                     <customCell key="dataCell" alignment="left" id="ZIs-gU-WxS" customClass="ColorSwatchCell" customModule="VideoCapture" customModuleProvider="target"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView id="RZH-hA-kdg">
-                                                            <rect key="frame" x="1" y="1" width="40" height="17"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                            <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ujO-HR-ezq">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="40" height="17"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="--" id="Nng-WC-RyA">
-                                                                        <font key="font" metaFont="system"/>
-                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                    </textFieldCell>
-                                                                </textField>
-                                                            </subviews>
-                                                            <connections>
-                                                                <outlet property="textField" destination="ujO-HR-ezq" id="RHA-CZ-HfG"/>
-                                                            </connections>
-                                                        </tableCellView>
+                                                        <colorWell bordered="NO" id="z1w-ai-xZD">
+                                                            <rect key="frame" x="1" y="1" width="40" height="23"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <color key="color" name="alternateSelectedControlTextColor" catalog="System" colorSpace="catalog"/>
+                                                        </colorWell>
                                                     </prototypeCellViews>
                                                 </tableColumn>
                                                 <tableColumn identifier="name" width="108.86713340877921" minWidth="40" maxWidth="1000" id="WDx-0q-zOz">
