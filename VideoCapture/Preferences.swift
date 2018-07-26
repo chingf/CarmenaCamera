@@ -26,6 +26,9 @@ private let keyTimeWindow = "TimeWindow"
 private let keyZScoresTimeWindow = "ZScoresTimeWindow"
 private let keyActivationThreshold = "ActivationThreshold"
 private let keyResetThreshold = "ResetThreshold"
+private let keyTTLPulsePin = "TTLPulsePin"
+private let keyBMIAudioPin = "BMIAudioPin"
+private let keyAudioSmoothed = "AudioSmoothed"
 
 enum PreferenceVideoFormat: CustomStringConvertible, Equatable {
     case raw
@@ -183,6 +186,27 @@ struct Preferences {
         }
     }
     
+    //BMI rule TTL pulse output
+    var ttlPulsePin: Int {
+        didSet {
+            UserDefaults.standard.setValue(ttlPulsePin, forKey: keyTTLPulsePin)
+        }
+    }
+    
+    //BMI audio cursor output
+    var bmiAudioPin: Int {
+        didSet {
+            UserDefaults.standard.setValue(bmiAudioPin, forKey: keyBMIAudioPin)
+        }
+    }
+    
+    // Whether or not to use zScoredSmoothed, as opposed to zScores, for audio dynamic range
+    var audioSmoothed: Bool {
+        didSet {
+            UserDefaults.standard.setValue(audioSmoothed, forKey: keyAudioSmoothed)
+        }
+    }
+    
     init() {
         // register preference defaults
         Preferences.registerDefaults()
@@ -218,6 +242,9 @@ struct Preferences {
         zScoresTimeWindow = defaults.integer(forKey: keyZScoresTimeWindow)
         activationThreshold = defaults.float(forKey: keyActivationThreshold)
         resetThreshold = defaults.float(forKey: keyResetThreshold)
+        ttlPulsePin = defaults.integer(forKey: keyTTLPulsePin)
+        bmiAudioPin = defaults.integer(forKey: keyBMIAudioPin)
+        audioSmoothed = defaults.bool(forKey: keyAudioSmoothed)
     }
     
     static let defaultPreferences: [String: Any] = [
@@ -239,7 +266,10 @@ struct Preferences {
         keyTimeWindow: NSNumber(value: 4 as Int),
         keyZScoresTimeWindow: NSNumber(value: 500 as Int),
         keyActivationThreshold: NSNumber(value: 6.0 as Float),
-        keyResetThreshold: NSNumber(value: 1.0 as Float)
+        keyResetThreshold: NSNumber(value: 1.0 as Float),
+        keyTTLPulsePin: NSNumber(value: 0 as Int),
+        keyBMIAudioPin: NSNumber(value: 14 as Int),
+        keyAudioSmoothed: NSNumber(value: false as Bool)
     ]
     
     // track

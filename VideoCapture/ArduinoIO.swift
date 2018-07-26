@@ -497,6 +497,19 @@ class ArduinoIO: NSObject, ORSSerialPortDelegate {
         DLog("ARDUINO WRITE \(pin): \(analogValue)")
     }
     
+    // Sends a TTL pulse through a digital output pin
+    func ttlPulse(_ pin: Int) {
+        do {
+            try writeTo(pin, digitalValue: true)
+            let ms: UInt32 = 1000
+            usleep(30*ms) //TTL pulse will be 30 ms long
+            try writeTo(pin, digitalValue: false)
+        } catch {
+            print("Error in sending TTL Pulse through Arduino")
+            exit(1)
+        }
+    }
+    
     func readAnalogValueFrom(_ pin: Int, andExecute cb: @escaping (UInt16?) -> Void) throws {
         guard canInteract() else {
             throw ArduinoIOError.portNotOpen

@@ -258,11 +258,24 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     var zScoresSmoothed: [Float] = []
     var monitoring: Bool = false
     var capturing: Bool = false
+    
+    // variables for implementing BMI rule: TTL Pulse
     var e1ROIs: Set<Int> = [] // Tracks which rows belong to E1
     var e2ROIs: Set<Int> = [] // Tracks which rows belong to E2
     var activationThreshold: Float = 0 // TTL pulse will be given when (E1 activity - E1 activity) > ACTIVATIONTHRESHOLD
     var resetThreshold: Float = 0 // TTL pulse will only be given when (E1 activity - E1 activity) resets to RESETTHRESHOLD
     var reset: Bool = false
+    var ttlPulsePin: Int = 0
+    
+    // variables for implementing BMI rule: audio output
+    var bmiAudioPin: Int = 0
+    var audioSmoothed: Bool = false
+    var audioLow: Float = 0 // AUDIOLOW and AUDIOHIGH give the possible range of analog output values
+    var audioHigh: Float = 255
+    var zLow: Float = -10
+    var zHigh: Float = 10 // ZLOW and ZHIGH give the accepted dynamic range of E1 activity minus E2 activity
+    var audioStep: Float = 0 //AUDIOSTEP will record the increase in analog output for every one unit of z score increased
+    
     
     // timer to redraw interface (saves time)
     var timerRedraw: Timer?
@@ -694,7 +707,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         capturing = true;
 
         // Update variables for sliding z-score calculation
-        initZScoreVariables()
+        initBMIVariables()
         
         // can only start capture from an editable mode
         guard mode.isEditable() else {
@@ -758,7 +771,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         monitoring = true;
         
         // Update variables for sliding z-score calculation
-        initZScoreVariables()
+        initBMIVariables()
         
         // can only start from an editable mode
         guard mode.isEditable() else {
@@ -2241,13 +2254,29 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             for row_idx in e2ROIs {
                 e2 += zScoresSmoothed[row_idx]
             }
-            if (e1 - e2) <= resetThreshold {
+            let eScore = e1 - e2
+            if (eScore) <= resetThreshold {
                 reset = true
             }
-            if ((e1 - e2) > activationThreshold) && (reset) {
+            if ((eScore) > activationThreshold) && (reset) {
                 //send TTL Pulse
-                reset = false
+                ioArduino!.ttlPulse(ttlPulsePin)
             }
+            
+            // Give audio output
+            do {
+                if (eScore) < zLow {
+                    try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioLow))
+                } else if (eScore) > zHigh {
+                    try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioHigh))
+                } else {
+                    try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(eScore*audioStep))
+                }
+            } catch {
+                print("Error in audio output")
+                exit(1)
+            }
+            
         }
 
         
@@ -2466,13 +2495,17 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     }
     
     // Function to reset or initialize variables for use in z-score calculation.
-    func initZScoreVariables() {
+    func initBMIVariables() {
         e1ROIs = Set<Int>()
         e2ROIs = Set<Int>()
         timeWindow = appPreferences.timeWindow
         zScoresTimeWindow = appPreferences.zScoresTimeWindow
         activationThreshold = appPreferences.activationThreshold
         resetThreshold = appPreferences.resetThreshold
+        ttlPulsePin = appPreferences.ttlPulsePin
+        bmiAudioPin = appPreferences.bmiAudioPin
+        audioSmoothed = appPreferences.audioSmoothed
+        audioStep = (audioHigh - audioLow)/(zHigh - zLow)
         samplesPerWindow = samplingRate * timeWindow * 60
         mean = [Float](repeating: 0.0, count: extractNames.count)
         variance = [Float](repeating: 0.0, count: extractNames.count)
@@ -2486,7 +2519,6 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         zScoresSmoothed = [Float](repeating: 0.0, count: extractNames.count)
         inputBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: samplesPerWindow)
         reset = true
-        //tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(0..<1))
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
     }
 }
