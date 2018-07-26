@@ -500,6 +500,9 @@ class ArduinoIO: NSObject, ORSSerialPortDelegate {
     // Sends a TTL pulse through a digital output pin
     func ttlPulse(_ pin: Int) {
         do {
+            guard pin >= 2 && pin <= 14 else {
+                throw ArduinoIOError.invalidPin(pin)
+            }
             try writeTo(pin, digitalValue: true)
             let ms: UInt32 = 1000
             usleep(30*ms) //TTL pulse will be 30 ms long

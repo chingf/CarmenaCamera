@@ -267,8 +267,8 @@ struct Preferences {
         keyZScoresTimeWindow: NSNumber(value: 500 as Int),
         keyActivationThreshold: NSNumber(value: 6.0 as Float),
         keyResetThreshold: NSNumber(value: 1.0 as Float),
-        keyTTLPulsePin: NSNumber(value: 0 as Int),
-        keyBMIAudioPin: NSNumber(value: 14 as Int),
+        keyTTLPulsePin: NSNumber(value: 2 as Int),
+        keyBMIAudioPin: NSNumber(value: 3 as Int),
         keyAudioSmoothed: NSNumber(value: false as Bool)
     ]
     
