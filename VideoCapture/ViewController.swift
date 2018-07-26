@@ -58,6 +58,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     @IBOutlet weak var buttonCapture: NSButton!
     @IBOutlet weak var buttonMonitor: NSButton!
     @IBOutlet weak var buttonStill: NSButton!
+    @IBOutlet weak var bmiToggle: NSButton!
     @IBOutlet weak var previewView: NSView!
     @IBOutlet weak var tableAnnotations: NSTableView!
     @IBOutlet weak var annotableView: AnnotableViewer! {
@@ -275,6 +276,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     var zLow: Float = -10
     var zHigh: Float = 10 // ZLOW and ZHIGH give the accepted dynamic range of E1 activity minus E2 activity
     var audioStep: Float = 0 //AUDIOSTEP will record the increase in analog output for every one unit of z score increased
+    var bmiEnabled: Bool = true
     
     
     // timer to redraw interface (saves time)
@@ -1803,6 +1805,11 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
                 if nil != self.avInputVideo {
                     try ioArduino!.writeTo(appPreferences.pinDigitalCamera, digitalValue: true)
                 }
+                
+                if bmiEnabled {
+                    try ioArduino!.setPinMode(appPreferences.ttlPulsePin, to: ArduinoIOPin.output)
+                    try ioArduino!.setPinMode(appPreferences.bmiAudioPin, to: ArduinoIOPin.output)
+                }
             }
             catch {
                 DLog("Unable to communicate with selected Arduino. \(error)")
@@ -1844,6 +1851,11 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             // start monitoring
             promptToStartMonitoring()
         }
+    }
+    
+    @IBAction func toggleBMI(_ sender: NSButton) {
+        bmiEnabled = !bmiEnabled
+        tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
     }
     
     @IBAction func captureStill(_ sender: NSButton!) {
@@ -2246,35 +2258,38 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             bufferIndex = (bufferIndex + 1) % samplesPerWindow
             
             // Check the TTL Rule to see if a reward should be given
-            var e1 = Float(0.0)
-            var e2 = Float(0.0)
-            for row_idx in e1ROIs {
-                e1 += zScoresSmoothed[row_idx]
-            }
-            for row_idx in e2ROIs {
-                e2 += zScoresSmoothed[row_idx]
-            }
-            let eScore = e1 - e2
-            if (eScore) <= resetThreshold {
-                reset = true
-            }
-            if ((eScore) > activationThreshold) && (reset) {
-                //send TTL Pulse
-                ioArduino!.ttlPulse(ttlPulsePin)
-            }
-            
-            // Give audio output
-            do {
-                if (eScore) < zLow {
-                    try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioLow))
-                } else if (eScore) > zHigh {
-                    try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioHigh))
-                } else {
-                    try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(eScore*audioStep))
+            if bmiEnabled {
+                var e1 = Float(0.0)
+                var e2 = Float(0.0)
+                for row_idx in e1ROIs {
+                    e1 += zScoresSmoothed[row_idx]
                 }
-            } catch {
-                print("Error in audio output")
-                exit(1)
+                for row_idx in e2ROIs {
+                    e2 += zScoresSmoothed[row_idx]
+                }
+                let eScore = e1 - e2
+                if (eScore) <= resetThreshold {
+                    reset = true
+                }
+                if ((eScore) > activationThreshold) && (reset) {
+                    //send TTL Pulse
+                    ioArduino!.ttlPulse(ttlPulsePin)
+                }
+                
+                ioArduino!.ttlPulse(ttlPulsePin)
+                // Give audio output
+                do {
+                    if (eScore) < zLow {
+                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioLow))
+                    } else if (eScore) > zHigh {
+                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioHigh))
+                    } else {
+                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(eScore*audioStep))
+                    }
+                } catch {
+                    print("Error in audio output")
+                    //exit(1)
+                }
             }
             
         }
@@ -2451,6 +2466,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             activeLED = .Primary
         }
     }
+
     
     @IBAction func setName(_ sender: NSTextField!) {
         //if let s = sender, let field = s as? NSTextField {
@@ -2579,7 +2595,7 @@ extension ViewController: NSTableViewDataSource {
                 e1State.isEnabled = false
                 return e1State
             }
-            e1State.isEnabled = true
+            e1State.isEnabled = bmiEnabled
             return nil
         case "e2":
             let e2ID = NSUserInterfaceItemIdentifier(rawValue: "e2")
@@ -2592,7 +2608,7 @@ extension ViewController: NSTableViewDataSource {
                 e2State.isEnabled = false
                 return e2State
             }
-            e2State.isEnabled = true
+            e2State.isEnabled = bmiEnabled
             return nil
         default:
             return nil
