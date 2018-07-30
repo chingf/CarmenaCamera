@@ -264,4 +264,32 @@ class AnnotableViewer: NSView {
             }
         }
     }
+    
+    func uploadROIs(_ roiFile: String) {
+        var myCSVContents = Array<Dictionary<String, String>>()
+        CSVScanner.runFunctionOnRowsFromFile(theColumnNames: ["x", "y", "radius"], withFileName: roiFile, withFunction: {(aRow:Dictionary<String, String>) in myCSVContents.append(aRow)})
+        
+        
+        let start = NSPoint(x: 0.5, y: 0.5)
+        let end = NSPoint(x: 0.55, y: 0.55)
+        let annot = AnnotationCircle.create(startPoint: start, endPoint: end, color: colors[nextColor])
+        nextColor = (nextColor + 1)%colors.count
+        annotations.append(annot)
+        delegate?.didChangeAnnotations(annotations)
+    }
+//
+//    override func draw(_ dirtyRect: NSRect) {
+//        super.draw(dirtyRect)
+//
+//        // draw annotations
+//        if let nsContext = NSGraphicsContext.current {
+//            let drawRect = NSRect(origin: CGPoint(x: 0.0, y: 0.0), size: self.frame.size)
+//            for annot in annotations {
+//                annot.drawOutline(nsContext, inRect: drawRect)
+//            }
+//            if let annot = self.annotationInProgress {
+//                annot.drawOutline(nsContext, inRect: drawRect)
+//            }
+//        }
+//    }
 }

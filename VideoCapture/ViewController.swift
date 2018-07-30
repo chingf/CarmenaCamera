@@ -59,6 +59,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     @IBOutlet weak var buttonMonitor: NSButton!
     @IBOutlet weak var buttonStill: NSButton!
     @IBOutlet weak var bmiToggle: NSButton!
+    @IBOutlet weak var uploadButton: NSButton!
     @IBOutlet weak var previewView: NSView!
     @IBOutlet weak var tableAnnotations: NSTableView!
     @IBOutlet weak var annotableView: AnnotableViewer! {
@@ -276,7 +277,10 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     var zLow: Float = -10
     var zHigh: Float = 10 // ZLOW and ZHIGH give the accepted dynamic range of E1 activity minus E2 activity
     var audioStep: Float = 0 //AUDIOSTEP will record the increase in analog output for every one unit of z score increased
-    var bmiEnabled: Bool = true
+    var bmiEnabled: Bool = false
+    
+    // Variable for manual ROI uploading
+    var roiFile: String = ""
     
     
     // timer to redraw interface (saves time)
@@ -337,6 +341,8 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         
         // hide/show toggle button
         buttonToggleLed?.isHidden = nil == appPreferences.pinAnalogSecondLED
+        
+        roiFile = appPreferences.roiFile
         
         // refresh interface
         refreshInterface()
@@ -1854,8 +1860,15 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     }
     
     @IBAction func toggleBMI(_ sender: NSButton) {
-        bmiEnabled = !bmiEnabled
+        if sender.state == NSControl.StateValue.on {bmiEnabled = true}
+        else {bmiEnabled = false}
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
+    }
+    
+    @IBAction func uploadROIs(_ sender: Any) {
+        if let av = annotableView {
+            av.uploadROIs(roiFile)
+        }
     }
     
     @IBAction func captureStill(_ sender: NSButton!) {
@@ -2276,15 +2289,15 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
                     ioArduino!.ttlPulse(ttlPulsePin)
                 }
                 
-                ioArduino!.ttlPulse(ttlPulsePin)
                 // Give audio output
                 do {
-                    if (eScore) < zLow {
+                    var audio = eScore*audioStep
+                    if (audio) < audioLow {
                         try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioLow))
-                    } else if (eScore) > zHigh {
+                    } else if (audio) > audioHigh {
                         try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioHigh))
                     } else {
-                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(eScore*audioStep))
+                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audio))
                     }
                 } catch {
                     print("Error in audio output")
@@ -2536,6 +2549,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         inputBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: samplesPerWindow)
         reset = true
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
+        uploadButton.isEnabled = false
     }
 }
 

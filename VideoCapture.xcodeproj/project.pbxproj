@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3DD51F442050BA3700911A8F /* ORSSerialPort in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DD51F432050BA3700911A8F /* ORSSerialPort */; };
+		68F4F9B8210FAC6600E9A61E /* CVScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F4F9B7210FAC6600E9A61E /* CVScanner.swift */; };
+		68F4F9BD210FBD2400E9A61E /* roi_upload.csv in Resources */ = {isa = PBXBuildFile; fileRef = 68F4F9BC210FBD2300E9A61E /* roi_upload.csv */; };
 		D8013F981B4037870053F452 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8013F971B4037870053F452 /* AppDelegate.swift */; };
 		D8013F9A1B4037870053F452 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8013F991B4037870053F452 /* ViewController.swift */; };
 		D8013F9C1B4037870053F452 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8013F9B1B4037870053F452 /* Images.xcassets */; };
@@ -81,6 +83,8 @@
 
 /* Begin PBXFileReference section */
 		3DD51F432050BA3700911A8F /* ORSSerialPort */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ORSSerialPort; path = Frameworks/ORSSerialPort; sourceTree = "<group>"; };
+		68F4F9B7210FAC6600E9A61E /* CVScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVScanner.swift; sourceTree = "<group>"; };
+		68F4F9BC210FBD2300E9A61E /* roi_upload.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = roi_upload.csv; sourceTree = "<group>"; };
 		D8013F921B4037870053F452 /* Video Capture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Video Capture.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8013F961B4037870053F452 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D8013F971B4037870053F452 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 		D8013F891B4037870053F452 = {
 			isa = PBXGroup;
 			children = (
+				68F4F9BC210FBD2300E9A61E /* roi_upload.csv */,
 				D8C386B81B441AD600DE70EA /* ORSSerialPort.xcodeproj */,
 				D83CF03A1B6FE15900B59532 /* CrashReporter.framework */,
 				D8B715B61B6FC13F008F76D8 /* QuartzCore.framework */,
@@ -202,6 +207,7 @@
 				D8C20BCE1B4C28200006ED7D /* Icon.icns */,
 				D8013F9B1B4037870053F452 /* Images.xcassets */,
 				D8013F951B4037870053F452 /* Supporting Files */,
+				68F4F9B7210FAC6600E9A61E /* CVScanner.swift */,
 			);
 			path = VideoCapture;
 			sourceTree = "<group>";
@@ -342,6 +348,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68F4F9BD210FBD2400E9A61E /* roi_upload.csv in Resources */,
 				D8013F9C1B4037870053F452 /* Images.xcassets in Resources */,
 				D8C20BCF1B4C28200006ED7D /* Icon.icns in Resources */,
 				D8C20BCC1B4C01E50006ED7D /* AnnotableViewer.xib in Resources */,
@@ -382,6 +389,7 @@
 				D801C9361B67E19A000954DF /* Equation.swift in Sources */,
 				D801C9321B67DA3F000954DF /* EquationParser.swift in Sources */,
 				D8E48E4B1B4593ED0052F4C7 /* Document.swift in Sources */,
+				68F4F9B8210FAC6600E9A61E /* CVScanner.swift in Sources */,
 				D8C386C01B4428B900DE70EA /* ArduinoIO.swift in Sources */,
 				D8A44EC11C6B96AC00DD8058 /* PreferencesViewController.swift in Sources */,
 				D8013F9A1B4037870053F452 /* ViewController.swift in Sources */,
@@ -534,8 +542,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Mac Developer: bliberti@bu.edu (429D9Y968X)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer: bliberti@bu.edu (429D9Y968X)";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = R3HK726DDZ;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -561,8 +569,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Mac Developer: bliberti@bu.edu (429D9Y968X)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer: bliberti@bu.edu (429D9Y968X)";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = R3HK726DDZ;
 				FRAMEWORK_SEARCH_PATHS = (
