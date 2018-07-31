@@ -268,13 +268,18 @@ class AnnotableViewer: NSView {
     func uploadROIs(_ roiFile: String) {
         var myCSVContents = Array<Dictionary<String, String>>()
         CSVScanner.runFunctionOnRowsFromFile(theColumnNames: ["x", "y", "radius"], withFileName: roiFile, withFunction: {(aRow:Dictionary<String, String>) in myCSVContents.append(aRow)})
-        
-        
-        let start = NSPoint(x: 0.5, y: 0.5)
-        let end = NSPoint(x: 0.55, y: 0.55)
-        let annot = AnnotationCircle.create(startPoint: start, endPoint: end, color: colors[nextColor])
-        nextColor = (nextColor + 1)%colors.count
-        annotations.append(annot)
+        myCSVContents.removeFirst(1)
+        for roi in myCSVContents {
+            let x = CGFloat(Double(roi["x"]!.trimmingCharacters(in: .whitespaces))!)
+            let y = CGFloat(Double(roi["y"]!.trimmingCharacters(in: .whitespaces))!)
+            let radius = CGFloat(Double(roi["radius"]!.trimmingCharacters(in: .whitespaces))!)
+            let newY = y + radius
+            let start = NSPoint(x: x, y: y)
+            let end = NSPoint(x: x, y: newY)
+            let annot = AnnotationCircle.create(startPoint: start, endPoint: end, color: colors[nextColor])
+            nextColor = (nextColor + 1)%colors.count
+            annotations.append(annot)
+        }
         delegate?.didChangeAnnotations(annotations)
     }
 //

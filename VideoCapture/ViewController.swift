@@ -62,6 +62,8 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     @IBOutlet weak var uploadButton: NSButton!
     @IBOutlet weak var previewView: NSView!
     @IBOutlet weak var tableAnnotations: NSTableView!
+    @IBOutlet weak var xy1: NSTextField!
+    @IBOutlet weak var xy2: NSTextField!
     @IBOutlet weak var annotableView: AnnotableViewer! {
         didSet {
             oldValue?.delegate = nil
@@ -296,6 +298,14 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     var ciContext: CIContext?
     var buffer: UnsafeMutableRawPointer? = nil
     var bufferSize = 0
+    
+    // Gets the coordinates of the video's edges in the (0-1, 0-1) axis system
+    // (x1, y1) represents the upper left hand corner of the video
+    // (x2, y2) represents the bottom right hand corner of the video
+    var x1: Float = 0
+    var y1: Float = 0
+    var x2: Float = 0
+    var y2: Float = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -713,7 +723,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     
     func promptToStartCapturing() {
         capturing = true;
-
+        uploadButton.isEnabled = false
         // Update variables for sliding z-score calculation
         initBMIVariables()
         
@@ -777,7 +787,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     
     func promptToStartMonitoring() {
         monitoring = true;
-        
+        uploadButton.isEnabled = false
         // Update variables for sliding z-score calculation
         initBMIVariables()
         
@@ -1313,6 +1323,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     /// Stops current capture session. Will return to monitoring if automatically triggered, otherwise will return to configuration mode.
     func stopCapturing() {
         capturing = false;
+        uploadButton.isEnabled = true
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
         
         guard mode.isCapturing() else {
@@ -1413,6 +1424,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     
     func stopMonitoring() {
         monitoring = false;
+        uploadButton.isEnabled = true
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
         
         guard mode.isMonitoring() else {
@@ -2024,7 +2036,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     }
     
     private func updateExtractionList(_ dimensions: CGSize) { // , _ rep: NSBitmapImageRep
-        // build mapping between square annotable dimensions and recntagular video dimensions
+        // build mapping between square annotable dimensions and rectangular video dimensions
         // including the largest dimension, which servers as the sacling factor
         let maxDim: CGFloat, videoFrame: CGRect
         if dimensions.width > dimensions.height {
@@ -2043,6 +2055,11 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         
         extractArray.removeAll()
         extractNames.removeAll()
+        x1 = Float(videoFrame.origin.x)/Float(maxDim); y1 = Float(videoFrame.origin.y)/Float(maxDim)
+        x2 = Float(videoFrame.size.width)/Float(maxDim) + x1 ; y2 = Float(videoFrame.size.height)/Float(maxDim) + y1
+        xy1.stringValue = "(\(x1), \(y1))"
+        xy2.stringValue = "(\(x2), \(y2))"
+        
         if let view = annotableView {
             for (i, annot) in view.annotations.enumerated() {
                 // append names (used by placeholders in equations)
