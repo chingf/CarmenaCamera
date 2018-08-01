@@ -2405,6 +2405,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         if let tv = tableAnnotations {
             if !(capturing || monitoring) {
                 tv.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(1..<2))
+                tv.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
             }
             tv.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(2..<4))
         }
