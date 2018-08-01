@@ -29,7 +29,6 @@ private let keyResetThreshold = "ResetThreshold"
 private let keyTTLPulsePin = "TTLPulsePin"
 private let keyBMIAudioPin = "BMIAudioPin"
 private let keyAudioSmoothed = "AudioSmoothed"
-private let keyROIFile = "ROIFile"
 
 enum PreferenceVideoFormat: CustomStringConvertible, Equatable {
     case raw
@@ -207,13 +206,7 @@ struct Preferences {
             UserDefaults.standard.setValue(audioSmoothed, forKey: keyAudioSmoothed)
         }
     }
-    
-    // The filename of the CSV containing ROI coordinates as circles
-    var roiFile: String {
-        didSet {
-            UserDefaults.standard.setValue(roiFile, forKey: keyROIFile)
-        }
-    }
+
     
     init() {
         // register preference defaults
@@ -253,7 +246,6 @@ struct Preferences {
         ttlPulsePin = defaults.integer(forKey: keyTTLPulsePin)
         bmiAudioPin = defaults.integer(forKey: keyBMIAudioPin)
         audioSmoothed = defaults.bool(forKey: keyAudioSmoothed)
-        roiFile = defaults.string(forKey: keyROIFile)!
     }
     
     static let defaultPreferences: [String: Any] = [
@@ -278,8 +270,7 @@ struct Preferences {
         keyResetThreshold: NSNumber(value: 1.0 as Float),
         keyTTLPulsePin: NSNumber(value: 2 as Int),
         keyBMIAudioPin: NSNumber(value: 3 as Int),
-        keyAudioSmoothed: NSNumber(value: false as Bool),
-        keyROIFile: "roi_upload"
+        keyAudioSmoothed: NSNumber(value: false as Bool)
     ]
     
     // track

@@ -352,8 +352,6 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         // hide/show toggle button
         buttonToggleLed?.isHidden = nil == appPreferences.pinAnalogSecondLED
         
-        roiFile = appPreferences.roiFile
-        
         // refresh interface
         refreshInterface()
     }
@@ -1878,8 +1876,20 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     }
     
     @IBAction func uploadROIs(_ sender: Any) {
-        if let av = annotableView {
-            av.uploadROIs(roiFile)
+        guard let window = view.window else { return }
+        var roiFile: URL!
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        
+        panel.beginSheetModal(for: window) { (result) -> Void in
+            if result.rawValue == NSFileHandlingPanelOKButton {
+                roiFile = panel.urls[0]
+                if let av = self.annotableView {
+                    av.uploadROIs(roiFile.absoluteString)
+                }
+            }
         }
     }
     

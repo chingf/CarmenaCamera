@@ -698,7 +698,6 @@
                         <tabViewItem identifier="" id="FtU-W0-ZSW"/>
                         <tabViewItem id="Zct-Ax-P6w"/>
                         <tabViewItem id="uFk-7d-1U3"/>
-                        <tabViewItem id="6EB-FZ-5pn"/>
                     </tabViewItems>
                     <viewControllerTransitionOptions key="transitionOptions" crossfade="YES" slideRight="YES" allowUserInteraction="YES"/>
                     <tabView key="tabView" type="noTabsNoBorder" id="xnh-JZ-URe">
@@ -714,7 +713,6 @@
                         <segue destination="D10-o0-Bhr" kind="relationship" relationship="tabItems" id="J2o-7G-2zd"/>
                         <segue destination="8nG-xv-1tU" kind="relationship" relationship="tabItems" id="aCa-CJ-jtu"/>
                         <segue destination="e79-D2-jWl" kind="relationship" relationship="tabItems" id="A63-aN-sGF"/>
-                        <segue destination="rHq-RK-AiZ" kind="relationship" relationship="tabItems" id="QZi-1l-Jlh"/>
                     </connections>
                 </tabViewController>
                 <customObject id="HKT-lb-8k2" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1298,7 +1296,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" rowSizeStyle="small" headerView="vm2-5k-HNv" viewBased="YES" id="ur6-Ur-zr2">
-                                            <rect key="frame" x="0.0" y="-354" width="479" height="200"/>
+                                            <rect key="frame" x="0.0" y="-400" width="479" height="200"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <size key="intercellSpacing" width="3" height="3"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2070,86 +2068,6 @@
                 <userDefaultsController id="Xob-Ch-lQ5"/>
             </objects>
             <point key="canvasLocation" x="1897" y="1476"/>
-        </scene>
-        <!--ROI Upload-->
-        <scene sceneID="qcg-v5-tqI">
-            <objects>
-                <viewController title="ROI Upload" showSeguePresentationStyle="single" id="rHq-RK-AiZ" customClass="PreferencesViewController" customModule="VideoCapture" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="thq-Pl-2gq">
-                        <rect key="frame" x="0.0" y="0.0" width="360" height="270"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dTq-0x-RnK">
-                                <rect key="frame" x="117" y="94" width="127" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Restore Default" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6hV-i1-GNF">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="revertToInitialValues:" target="jrU-H9-3I1" id="380-BE-ZDP"/>
-                                </connections>
-                            </button>
-                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vvQ-Yc-0S2">
-                                <rect key="frame" x="146" y="137" width="99" height="22"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="right" placeholderString="roi_upload" drawsBackground="YES" id="ZwZ-Zm-oTL">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                                <connections>
-                                    <binding destination="jrU-H9-3I1" name="value" keyPath="values.ROIFile" id="aiT-hm-dlH"/>
-                                </connections>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ykI-Lh-oQW">
-                                <rect key="frame" x="251" y="139" width="29" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title=".csv" id="1xd-ug-OcM">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Omf-PR-eLj">
-                                <rect key="frame" x="77" y="137" width="63" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Filename:" id="HFG-Zz-98e">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oX5-Bc-zmp">
-                                <rect key="frame" x="15" y="174" width="327" height="76"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="Rw5-9g-eyT">
-                                    <font key="font" metaFont="systemBold"/>
-                                    <string key="title">Changes will only impact newly opened video capture windows. For consistency, existing windows will continue to use their current preferences.</string>
-                                    <color key="textColor" name="alternateSelectedControlColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0UG-B4-VQC">
-                                <rect key="frame" x="37" y="31" width="287" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" id="3PX-gL-7r9">
-                                    <font key="font" metaFont="miniSystem"/>
-                                    <string key="title">Note: The CSV file used to upload ROIs should be located in the root project directory. The file must also be added into the "Bundle Resources" section of the project's Build Phase in order to be recognized by the program.</string>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                    </view>
-                    <connections>
-                        <outlet property="userDefaultsController" destination="jrU-H9-3I1" id="E2U-RB-ZEr"/>
-                    </connections>
-                </viewController>
-                <customObject id="vZG-ye-81l" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <userDefaultsController id="jrU-H9-3I1"/>
-            </objects>
-            <point key="canvasLocation" x="1497" y="896"/>
         </scene>
     </scenes>
 </document>
