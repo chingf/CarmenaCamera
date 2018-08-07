@@ -14,7 +14,7 @@ class CSVScanner {
     class func runFunctionOnRowsFromFile(theColumnNames:Array<String>, withFileName theFileName:String, withFunction theFunction:(Dictionary<String, String>)->()) {
         
         let bundle = Bundle.main
-        if let strBundle = bundle.path(forResource: theFileName, ofType: "csv") {
+        if let strBundle = Optional(theFileName) {//bundle.path(forResource: theFileName, ofType: "csv") {
             
             var encodingError:NSError? = nil
             

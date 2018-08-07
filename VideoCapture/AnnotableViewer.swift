@@ -5,7 +5,6 @@
 //  Copyright © 2015
 
 import Cocoa
-import CSVImporter
 
 // counter for IDs for annotations
 var nextId = 1
@@ -267,21 +266,26 @@ class AnnotableViewer: NSView {
     }
     
     func uploadROIs(_ roiFile: String) {
-        let importer = CSVImporter<[String: String]>(path: roiFile)
-        importer.startImportingRecords(structure: { (headerValues) -> Void in
-        }) { $0 }.onFinish { importedROIs in
-            for roi in importedROIs {
-                let x = CGFloat(Double(roi["x"]!.trimmingCharacters(in: .whitespaces))!)
-                let y = CGFloat(Double(roi["y"]!.trimmingCharacters(in: .whitespaces))!)
-                let radius = CGFloat(Double(roi["radius"]!.trimmingCharacters(in: .whitespaces))!)
-                let newY = y + radius
-                let start = NSPoint(x: x, y: y)
-                let end = NSPoint(x: x, y: newY)
-                let annot = AnnotationCircle.create(startPoint: start, endPoint: end, color: colors[nextColor])
-                nextColor = (nextColor + 1)%colors.count
-                annotations.append(annot)
-            }
-        }
+        var roiFiles = "/Users/daedalus01/Documents/Swift/video-capture-old/roi_upload.csv"
+        var contents = Array<Dictionary<String, String>>()
+        CSVScanner.runFunctionOnRowsFromFile(theColumnNames: ["x", "y", "radius"], withFileName: roiFiles, withFunction: {
+            (aRow: Dictionary<String, String>) in
+            contents.append(aRow)
+        })//        let importer = CSVImporter<[String: String]>(path: roiFile)
+//        importer.startImportingRecords(structure: { (headerValues) -> Void in
+//        }) { $0 }.onFinish { importedROIs in
+//            for roi in importedROIs {
+//                let x = CGFloat(Double(roi["x"]!.trimmingCharacters(in: .whitespaces))!)
+//                let y = CGFloat(Double(roi["y"]!.trimmingCharacters(in: .whitespaces))!)
+//                let radius = CGFloat(Double(roi["radius"]!.trimmingCharacters(in: .whitespaces))!)
+//                let newY = y + radius
+//                let start = NSPoint(x: x, y: y)
+//                let end = NSPoint(x: x, y: newY)
+//                let annot = AnnotationCircle.create(startPoint: start, endPoint: end, color: colors[nextColor])
+//                nextColor = (nextColor + 1)%colors.count
+//                annotations.append(annot)
+//            }
+//        }
         delegate?.didChangeAnnotations(annotations)
     }
 //

@@ -186,6 +186,7 @@
 		D8013F941B4037870053F452 /* VideoCapture */ = {
 			isa = PBXGroup;
 			children = (
+				68F4F9B7210FAC6600E9A61E /* CVScanner.swift */,
 				D8566EC91B419A30006A57BF /* AnnotableViewer.swift */,
 				D87DB6C21B45958B00131082 /* Annotations.swift */,
 				D8013F971B4037870053F452 /* AppDelegate.swift */,
@@ -207,7 +208,6 @@
 				D8C20BCE1B4C28200006ED7D /* Icon.icns */,
 				D8013F9B1B4037870053F452 /* Images.xcassets */,
 				D8013F951B4037870053F452 /* Supporting Files */,
-				68F4F9B7210FAC6600E9A61E /* CVScanner.swift */,
 			);
 			path = VideoCapture;
 			sourceTree = "<group>";
