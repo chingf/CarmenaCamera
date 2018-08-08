@@ -265,42 +265,22 @@ class AnnotableViewer: NSView {
         }
     }
     
-    func uploadROIs(_ roiFile: String) {
-        var roiFiles = "/Users/daedalus01/Documents/Swift/video-capture-old/roi_upload.csv"
-        var contents = Array<Dictionary<String, String>>()
-        CSVScanner.runFunctionOnRowsFromFile(theColumnNames: ["x", "y", "radius"], withFileName: roiFiles, withFunction: {
-            (aRow: Dictionary<String, String>) in
-            contents.append(aRow)
-        })//        let importer = CSVImporter<[String: String]>(path: roiFile)
-//        importer.startImportingRecords(structure: { (headerValues) -> Void in
-//        }) { $0 }.onFinish { importedROIs in
-//            for roi in importedROIs {
-//                let x = CGFloat(Double(roi["x"]!.trimmingCharacters(in: .whitespaces))!)
-//                let y = CGFloat(Double(roi["y"]!.trimmingCharacters(in: .whitespaces))!)
-//                let radius = CGFloat(Double(roi["radius"]!.trimmingCharacters(in: .whitespaces))!)
-//                let newY = y + radius
-//                let start = NSPoint(x: x, y: y)
-//                let end = NSPoint(x: x, y: newY)
-//                let annot = AnnotationCircle.create(startPoint: start, endPoint: end, color: colors[nextColor])
-//                nextColor = (nextColor + 1)%colors.count
-//                annotations.append(annot)
-//            }
-//        }
+    func uploadROIs(_ file: String) {
+        var myCSVContents = Array<Dictionary<String, String>>()
+        var roiFile = String(file[file.index(file.startIndex, offsetBy: 7) ..< file.endIndex])
+        CSVScanner.runFunctionOnRowsFromFile(theColumnNames: ["x", "y", "radius"], withFileName: roiFile, withFunction: {(aRow:Dictionary<String, String>) in myCSVContents.append(aRow)})
+        myCSVContents.removeFirst(1)
+        for roi in myCSVContents {
+            let x = CGFloat(Double(roi["x"]!.trimmingCharacters(in: .whitespaces))!)
+            let y = CGFloat(Double(roi["y"]!.trimmingCharacters(in: .whitespaces))!)
+            let radius = CGFloat(Double(roi["radius"]!.trimmingCharacters(in: .whitespaces))!)
+            let newY = y + radius
+            let start = NSPoint(x: x, y: y)
+            let end = NSPoint(x: x, y: newY)
+            let annot = AnnotationCircle.create(startPoint: start, endPoint: end, color: colors[nextColor])
+            nextColor = (nextColor + 1)%colors.count
+            annotations.append(annot)
+        }
         delegate?.didChangeAnnotations(annotations)
     }
-//
-//    override func draw(_ dirtyRect: NSRect) {
-//        super.draw(dirtyRect)
-//
-//        // draw annotations
-//        if let nsContext = NSGraphicsContext.current {
-//            let drawRect = NSRect(origin: CGPoint(x: 0.0, y: 0.0), size: self.frame.size)
-//            for annot in annotations {
-//                annot.drawOutline(nsContext, inRect: drawRect)
-//            }
-//            if let annot = self.annotationInProgress {
-//                annot.drawOutline(nsContext, inRect: drawRect)
-//            }
-//        }
-//    }
 }
