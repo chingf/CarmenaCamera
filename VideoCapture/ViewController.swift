@@ -1872,6 +1872,14 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     @IBAction func toggleBMI(_ sender: NSButton) {
         if sender.state == NSControl.StateValue.on {bmiEnabled = true}
         else {bmiEnabled = false}
+        do {
+            if bmiEnabled {
+                try ioArduino!.setPinMode(appPreferences.ttlPulsePin, to: ArduinoIOPin.output)
+                try ioArduino!.setPinMode(appPreferences.bmiAudioPin, to: ArduinoIOPin.output)
+            }
+        } catch {
+            exit(1)
+        }
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
     }
     
@@ -2314,8 +2322,8 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
                 if ((eScore) > activationThreshold) && (reset) {
                     //send TTL Pulse
                     ioArduino!.ttlPulse(ttlPulsePin)
+                    reset = false
                 }
-                
                 // Give audio output
                 do {
                     var audio = eScore*audioStep
