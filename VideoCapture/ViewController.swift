@@ -254,8 +254,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     var newestInput: [Float] = []
     var m2n: [Float] = [] // For use when buffer is not yet full, when using Welford's algorithm (see wiki link)
     var numSamples = 0 // NOTE: this variable is not updated once equal to samplesPerWindow
-    var zScoresTimeWindow = 0// in milliseconds
-    var zScoresSamplesPerWindow = 0
+    var zScoresFramesSmoothed = 0 // Number of frames to smooth z-score
     var zScores: [Float] = []
     var zScoresBuffer: [[Float]] = []
     var zScoresBufferIndex = 0
@@ -1614,6 +1613,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         }
     }
 
+ 
     @IBAction func selectVideoSource(_ sender: NSPopUpButton!) {
         if let selected = sender.selectedItem, let deviceUniqueID = deviceUniqueIDs[selected.tag] {
             DLog("Device ID: \(deviceUniqueID)")
@@ -1662,14 +1662,54 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             // get device and add it
             if let videoDevice = getDevice(deviceUniqueID, mediaTypes: [AVMediaType.video, AVMediaType.muxed]) {
                 // get formats
-//                for f in videoDevice.formats {
-//                    let f2 = f as! AVCaptureDeviceFormat
-//                    let d = CMVideoFormatDescriptionGetDimensions(f2.formatDescription)
-//                    DLog("\(d)")
-//                }
+                //                for f in videoDevice.formats {
+                //                    print("\(f)")
+                //                    let d = CMVideoFormatDescriptionGetDimensions(f.formatDescription)
+                //                    DLog("\(d)")
+                //                }
+                
+                // lock for configuration
+                var newFormat: AVCaptureDevice.Format? = nil
+                var newRange: AVFrameRateRange? = nil
+                for format in videoDevice.formats {
+                    let dimensions = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+                    if dimensions.width == 2592 {
+                        newFormat = format
+                        for range in format.videoSupportedFrameRateRanges {
+                            if newRange == nil || range.maxFrameRate > newRange!.maxFrameRate {
+                                newRange = range
+                            }
+                        }
+                        break
+                    }
+                }
+                
+                var shouldUnlock = false
+                if let newFormat = newFormat {
+                    do {
+                        shouldUnlock = true
+                        try videoDevice.lockForConfiguration()
+                        videoDevice.activeFormat = newFormat
+                        if let newRange = newRange {
+                            videoDevice.activeVideoMinFrameDuration = newRange.minFrameDuration
+                            videoDevice.activeVideoMaxFrameDuration = newRange.maxFrameDuration
+                        }
+                    }
+                    catch {
+                        DLog("VIDEO FORMAT: Unable to lock device to change format; must be in use elsewhere")
+                    }
+                }
+                else {
+                    DLog("VIDEO FORMAT: No matching format found.")
+                }
                 
                 // add input
                 avInputVideo = addInput(videoDevice)
+                
+                // unlock configuration
+                if shouldUnlock {
+                    videoDevice.unlockForConfiguration()
+                }
                 
                 // update document
                 copyToDocument()
@@ -2257,7 +2297,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             if numSamples == 1 { // If there are two or less samples, directly calculate mean/std dev
                 mean = extractValues
                 zScoresBuffer[zScoresBufferIndex] = zScores
-                zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresSamplesPerWindow
+                zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresFramesSmoothed
                 zScoresSmoothed = zScores
             } else if numSamples == 2 {
                 mean = mean.enumerated().map{($1 + newestInput[$0])/2}
@@ -2266,7 +2306,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
                 stdDev = variance.map{sqrt($0)}
                 zScores = mean.enumerated().map{(extractValues[$0] - $1)/stdDev[$0]}
                 zScoresBuffer[zScoresBufferIndex] = zScores
-                zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresSamplesPerWindow
+                zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresFramesSmoothed
                 zScoresSmoothed = zScoresSmoothed.enumerated().map{($1 + zScores[$0])/2}
             } else if numSamples <= samplesPerWindow { // If buffer is not yet filled, use the online Welford algorithm (METHOD 1)
                 var oldMean = mean
@@ -2275,17 +2315,17 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
                 variance = m2n.map{$0/Float(numSamples + 1)}
                 stdDev = variance.map{sqrt($0)}
                 
-                if numSamples <= zScoresSamplesPerWindow {
+                if numSamples <= zScoresFramesSmoothed {
                     zScores = mean.enumerated().map{(extractValues[$0] - $1)/stdDev[$0]}
                     zScoresBuffer[zScoresBufferIndex] = zScores
-                    zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresSamplesPerWindow
+                    zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresFramesSmoothed
                     zScoresSmoothed = zScoresSmoothed.enumerated().map{$1 + (zScores[$0] - $1)/Float(numSamples)}
                 } else {
                     zScores = mean.enumerated().map{(extractValues[$0] - $1)/stdDev[$0]}
                     var zScoresOldestInput = zScoresBuffer[zScoresBufferIndex]
                     zScoresBuffer[zScoresBufferIndex] = zScores
-                    zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresSamplesPerWindow
-                    zScoresSmoothed = zScoresSmoothed.enumerated().map{$1 + (zScores[$0] - zScoresOldestInput[$0])/Float(zScoresSamplesPerWindow)}
+                    zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresFramesSmoothed
+                    zScoresSmoothed = zScoresSmoothed.enumerated().map{$1 + (zScores[$0] - zScoresOldestInput[$0])/Float(zScoresFramesSmoothed)}
                 }
             } else { // If buffer is filled, use the rolling update method (METHOD 2)
                 oldestInput = inputBuffer[bufferIndex]
@@ -2297,8 +2337,8 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
                 zScores = mean.enumerated().map{(extractValues[$0] - $1)/stdDev[$0]}
                 var zScoresOldestInput = zScoresBuffer[zScoresBufferIndex]
                 zScoresBuffer[zScoresBufferIndex] = zScores
-                zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresSamplesPerWindow
-                zScoresSmoothed = zScoresSmoothed.enumerated().map{$1 + (zScores[$0] - zScoresOldestInput[$0])/Float(zScoresSamplesPerWindow)}
+                zScoresBufferIndex = (zScoresBufferIndex + 1) % zScoresFramesSmoothed
+                zScoresSmoothed = zScoresSmoothed.enumerated().map{$1 + (zScores[$0] - zScoresOldestInput[$0])/Float(zScoresFramesSmoothed)}
             }
             
             // Update values for the next iteration
@@ -2564,7 +2604,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         e1ROIs = Set<Int>()
         e2ROIs = Set<Int>()
         timeWindow = appPreferences.timeWindow
-        zScoresTimeWindow = appPreferences.zScoresTimeWindow
+        zScoresFramesSmoothed = 15//        appPreferences.zScoresFramesSmoothed
         activationThreshold = appPreferences.activationThreshold
         resetThreshold = appPreferences.resetThreshold
         ttlPulsePin = appPreferences.ttlPulsePin
@@ -2579,8 +2619,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         newestInput = [Float](repeating: 0.0, count: extractNames.count)
         m2n = [Float](repeating: 0.0, count: extractNames.count)
         zScores = [Float](repeating: 0.0, count: extractNames.count)
-        zScoresSamplesPerWindow = Int(Float(samplingRate) * (Float(zScoresTimeWindow)/1000.0))
-        zScoresBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: zScoresSamplesPerWindow)
+        zScoresBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: zScoresFramesSmoothed)
         zScoresSmoothed = [Float](repeating: 0.0, count: extractNames.count)
         inputBuffer = Array(repeating: Array(repeating: 0.0, count: extractNames.count), count: samplesPerWindow)
         reset = true

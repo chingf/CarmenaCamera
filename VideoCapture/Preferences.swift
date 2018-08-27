@@ -23,7 +23,7 @@ private let keyVideoFormat = "VideoFormat"
 
 //Z-score value names
 private let keyTimeWindow = "TimeWindow"
-private let keyZScoresTimeWindow = "ZScoresTimeWindow"
+private let keyZScoresFramesSmoothed = "ZScoresFramesSmoothed"
 private let keyActivationThreshold = "ActivationThreshold"
 private let keyResetThreshold = "ResetThreshold"
 private let keyTTLPulsePin = "TTLPulsePin"
@@ -166,9 +166,9 @@ struct Preferences {
     }
     
     //z-score smoothing time window
-    var zScoresTimeWindow: Int {
+    var zScoresFramesSmoothed: Int {
         didSet {
-            UserDefaults.standard.setValue(zScoresTimeWindow, forKey: keyZScoresTimeWindow)
+            UserDefaults.standard.setValue(zScoresFramesSmoothed, forKey: keyZScoresFramesSmoothed)
         }
     }
     
@@ -240,7 +240,7 @@ struct Preferences {
         
         // Set z-score variables
         timeWindow = defaults.integer(forKey: keyTimeWindow)
-        zScoresTimeWindow = defaults.integer(forKey: keyZScoresTimeWindow)
+        zScoresFramesSmoothed = defaults.integer(forKey: keyZScoresFramesSmoothed)
         activationThreshold = defaults.float(forKey: keyActivationThreshold)
         resetThreshold = defaults.float(forKey: keyResetThreshold)
         ttlPulsePin = defaults.integer(forKey: keyTTLPulsePin)
@@ -265,7 +265,7 @@ struct Preferences {
         
         // Set z-score variables
         keyTimeWindow: NSNumber(value: 4 as Int),
-        keyZScoresTimeWindow: NSNumber(value: 500 as Int),
+        keyZScoresFramesSmoothed: NSNumber(value: 1 as Int),
         keyActivationThreshold: NSNumber(value: 6.0 as Float),
         keyResetThreshold: NSNumber(value: 1.0 as Float),
         keyTTLPulsePin: NSNumber(value: 2 as Int),

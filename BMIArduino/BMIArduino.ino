@@ -1,6 +1,6 @@
 
 //--------------------------------------------------------------------//
-//          FINCHSCOPE ARDUINO MK 1.0
+//          BMI ARDUINO MK 1.0
 //--------------------------------------------------------------------//
 
 /* MODIFIED by WALIII, based on cobe by Analog and Digital Input and 
