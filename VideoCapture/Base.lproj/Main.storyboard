@@ -1296,7 +1296,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" rowSizeStyle="small" headerView="vm2-5k-HNv" viewBased="YES" id="ur6-Ur-zr2">
-                                            <rect key="frame" x="0.0" y="-446" width="479" height="200"/>
+                                            <rect key="frame" x="0.0" y="-469" width="479" height="200"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <size key="intercellSpacing" width="3" height="3"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1495,49 +1495,23 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableHeaderView>
                             </scrollView>
-                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vMf-8K-0pf">
-                                <rect key="frame" x="407" y="173" width="94" height="14"/>
+                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vMf-8K-0pf">
+                                <rect key="frame" x="407" y="173" width="69" height="14"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ANu-LQ-32g">
-                                        <rect key="frame" x="0.0" y="0.0" width="94" height="14"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="69" height="14"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IAO-P1-OOl">
-                                                <rect key="frame" x="0.0" y="0.0" width="94" height="14"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="69" height="14"/>
                                                 <subviews>
                                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E2l-3c-s35">
-                                                        <rect key="frame" x="0.0" y="0.0" width="94" height="14"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="69" height="14"/>
                                                         <subviews>
                                                             <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Crw-z2-Rsu">
-                                                                <rect key="frame" x="0.0" y="0.0" width="94" height="14"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="69" height="14"/>
                                                                 <subviews>
                                                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DeG-Gk-Pxa">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="94" height="14"/>
-                                                                        <subviews>
-                                                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gWH-kg-7jt">
-                                                                                <rect key="frame" x="-2" y="-2" width="98" height="18"/>
-                                                                                <constraints>
-                                                                                    <constraint firstAttribute="width" constant="94" id="cyq-MT-2dN"/>
-                                                                                    <constraint firstAttribute="height" constant="14" id="ryl-0E-8Id"/>
-                                                                                </constraints>
-                                                                                <buttonCell key="cell" type="check" title="BMI Enabled" bezelStyle="regularSquare" imagePosition="left" inset="2" id="8PQ-SW-jRT">
-                                                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
-                                                                                </buttonCell>
-                                                                                <connections>
-                                                                                    <action selector="toggleBMI:" target="XfG-lQ-9wD" id="jKB-ME-fyf"/>
-                                                                                </connections>
-                                                                            </button>
-                                                                        </subviews>
-                                                                        <constraints>
-                                                                            <constraint firstItem="gWH-kg-7jt" firstAttribute="leading" secondItem="DeG-Gk-Pxa" secondAttribute="leading" id="2Sc-2k-xhb"/>
-                                                                            <constraint firstAttribute="trailing" secondItem="gWH-kg-7jt" secondAttribute="trailing" id="Clx-8j-8rv"/>
-                                                                        </constraints>
-                                                                        <visibilityPriorities>
-                                                                            <integer value="1000"/>
-                                                                        </visibilityPriorities>
-                                                                        <customSpacing>
-                                                                            <real value="3.4028234663852886e+38"/>
-                                                                        </customSpacing>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="69" height="14"/>
                                                                     </stackView>
                                                                 </subviews>
                                                                 <visibilityPriorities>
@@ -1579,13 +1553,13 @@
                                     <real value="3.4028234663852886e+38"/>
                                 </customSpacing>
                             </stackView>
-                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="woQ-Zu-VXF">
-                                <rect key="frame" x="20" y="169" width="104" height="21"/>
+                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="woQ-Zu-VXF">
+                                <rect key="frame" x="20" y="169" width="129" height="21"/>
                                 <subviews>
-                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TVR-W4-UcS">
+                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TVR-W4-UcS">
                                         <rect key="frame" x="0.0" y="0.0" width="104" height="21"/>
                                         <subviews>
-                                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A34-M7-7Lc">
+                                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A34-M7-7Lc">
                                                 <rect key="frame" x="0.0" y="0.0" width="104" height="21"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="keQ-JU-YxI">
@@ -1667,6 +1641,31 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EEw-Lg-cHI">
+                                <rect key="frame" x="430" y="171" width="73" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Tone On" bezelStyle="regularSquare" imagePosition="left" enabled="NO" inset="2" id="6iW-CM-zhK">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="toggleTone:" target="XfG-lQ-9wD" id="35u-yt-WCg"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gWH-kg-7jt">
+                                <rect key="frame" x="289" y="171" width="98" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="94" id="cyq-MT-2dN"/>
+                                    <constraint firstAttribute="height" constant="14" id="ryl-0E-8Id"/>
+                                </constraints>
+                                <buttonCell key="cell" type="check" title="BMI Enabled" bezelStyle="regularSquare" imagePosition="left" inset="2" id="8PQ-SW-jRT">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="toggleBMI:" target="XfG-lQ-9wD" id="jKB-ME-fyf"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="7Bp-BT-xUt" secondAttribute="trailing" constant="20" id="0hc-gU-EeO"/>
@@ -1739,6 +1738,7 @@
                         <outlet property="textLedBrightness" destination="7Yb-zf-7Hf" id="llC-FS-D47"/>
                         <outlet property="textName" destination="Jlq-2j-1cC" id="dND-yx-q06"/>
                         <outlet property="tokenFeedback" destination="M5E-ks-Vxv" id="bnY-TC-fBe"/>
+                        <outlet property="toneToggle" destination="EEw-Lg-cHI" id="lLJ-Cd-qEu"/>
                         <outlet property="uploadButton" destination="keQ-JU-YxI" id="p6c-9c-HR6"/>
                         <outlet property="view" destination="m2S-Jp-Qdl" id="bl6-jL-P0I"/>
                         <outlet property="xy1" destination="iJb-DV-pKS" id="W20-DT-6K8"/>
@@ -1983,6 +1983,14 @@
                                     <binding destination="Xob-Ch-lQ5" name="value" keyPath="values.AudioSmoothed" id="Uvm-Vb-pSS"/>
                                 </connections>
                             </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sRQ-Fs-kM5">
+                                <rect key="frame" x="310" y="121" width="122" height="22"/>
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" title="Note: Modify BMIArduino file as necessary." id="HQf-pE-T8U">
+                                    <font key="font" metaFont="miniSystem"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
                             <constraint firstItem="bBj-eh-JuE" firstAttribute="top" secondItem="baz-6N-qPg" secondAttribute="bottom" constant="14" id="29n-Ue-KWv"/>
@@ -2020,6 +2028,7 @@
                             <constraint firstItem="bBj-eh-JuE" firstAttribute="leading" secondItem="elA-ov-E2m" secondAttribute="leading" id="QCs-qp-OW6"/>
                             <constraint firstItem="baz-6N-qPg" firstAttribute="baseline" secondItem="n6Z-5q-lta" secondAttribute="firstBaseline" id="QJq-Rk-oco"/>
                             <constraint firstItem="elA-ov-E2m" firstAttribute="firstBaseline" secondItem="Gt2-kU-BKq" secondAttribute="firstBaseline" constant="-1" id="RaN-14-xNI"/>
+                            <constraint firstItem="sRQ-Fs-kM5" firstAttribute="leading" secondItem="CTv-Yg-Y7S" secondAttribute="trailing" constant="93" id="V0M-Oq-0EL"/>
                             <constraint firstItem="Gt2-kU-BKq" firstAttribute="top" secondItem="una-Mg-smW" secondAttribute="bottom" constant="10" id="ZSj-EJ-sFY"/>
                             <constraint firstItem="cdG-Qs-bZA" firstAttribute="top" secondItem="6os-tF-M4V" secondAttribute="bottom" constant="22" id="b0j-90-xjA"/>
                             <constraint firstAttribute="bottom" secondItem="cdG-Qs-bZA" secondAttribute="bottom" constant="11" id="buf-dU-8wh"/>
@@ -2031,6 +2040,7 @@
                             <constraint firstItem="UZj-us-W70" firstAttribute="leading" secondItem="CTv-Yg-Y7S" secondAttribute="trailing" constant="14" id="hHK-WP-OiZ"/>
                             <constraint firstItem="7CY-7t-GwE" firstAttribute="top" secondItem="n6Z-5q-lta" secondAttribute="bottom" constant="9" id="hIs-Pp-3Xn"/>
                             <constraint firstItem="CTv-Yg-Y7S" firstAttribute="leading" secondItem="rHH-SW-oZN" secondAttribute="leading" id="i43-cC-jMl"/>
+                            <constraint firstItem="sRQ-Fs-kM5" firstAttribute="top" secondItem="7JM-On-efg" secondAttribute="bottom" constant="165" id="io6-hS-XRy"/>
                             <constraint firstItem="WQO-fc-ws1" firstAttribute="leading" secondItem="rHH-SW-oZN" secondAttribute="trailing" constant="14" id="iwV-jb-d4C"/>
                             <constraint firstItem="4Cu-5I-Agw" firstAttribute="centerY" secondItem="rHH-SW-oZN" secondAttribute="centerY" id="jHA-dK-cZD"/>
                             <constraint firstItem="una-Mg-smW" firstAttribute="top" secondItem="IPG-2f-hzS" secondAttribute="bottom" constant="7" id="jzw-FV-V8F"/>

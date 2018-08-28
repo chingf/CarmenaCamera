@@ -59,6 +59,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     @IBOutlet weak var buttonMonitor: NSButton!
     @IBOutlet weak var buttonStill: NSButton!
     @IBOutlet weak var bmiToggle: NSButton!
+    @IBOutlet weak var toneToggle: NSButton!
     @IBOutlet weak var uploadButton: NSButton!
     @IBOutlet weak var previewView: NSView!
     @IBOutlet weak var tableAnnotations: NSTableView!
@@ -273,12 +274,13 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     // variables for implementing BMI rule: audio output
     var bmiAudioPin: Int = 0
     var audioSmoothed: Bool = false
-    var audioLow: Float = 0 // AUDIOLOW and AUDIOHIGH give the possible range of analog output values
+    var audioLow: Float = 1 // AUDIOLOW and AUDIOHIGH give the possible range of analog output values
     var audioHigh: Float = 255
-    var zLow: Float = -10
-    var zHigh: Float = 10 // ZLOW and ZHIGH give the accepted dynamic range of E1 activity minus E2 activity
+    var zLow: Float = -1
+    var zHigh: Float = 3 // ZLOW and ZHIGH give the accepted dynamic range of E1 activity minus E2 activity
     var audioStep: Float = 0 //AUDIOSTEP will record the increase in analog output for every one unit of z score increased
     var bmiEnabled: Bool = false
+    var toneEnabled: Bool = false
     
     // Variable for manual ROI uploading
     var roiFile: String = ""
@@ -1191,11 +1193,25 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         headers += "Date,\"\(formatter.string(from: date))\"\n"
         
         if !extractRegionString.isEmpty { // the string is doubled for z-score headers
+            // Record region type and coordinates
             headers += "Region"
             for r in extractRegionString {
                 headers += ",\(r),\(r)"
             }
             headers += "\n"
+            
+            // Record which ensembles the regions belong to
+            headers += "Ensemble"
+            for i in 0..<extractValues.count {
+                if e1ROIs.contains(i) {
+                    headers += ",1,1"
+                } else if e2ROIs.contains(i) {
+                    headers += ",2,2"
+                } else {
+                    headers += ",,"
+                }
+            }
+            headers += "\n\n"
         }
         
         
@@ -1910,8 +1926,13 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
     }
     
     @IBAction func toggleBMI(_ sender: NSButton) {
-        if sender.state == NSControl.StateValue.on {bmiEnabled = true}
-        else {bmiEnabled = false}
+        if (sender.state == NSControl.StateValue.on) {
+            bmiEnabled = true
+            toneToggle.isEnabled = true;
+        } else {
+            bmiEnabled = false
+            toneToggle.isEnabled = false;
+        }
         do {
             if bmiEnabled {
                 try ioArduino!.setPinMode(appPreferences.ttlPulsePin, to: ArduinoIOPin.output)
@@ -1921,6 +1942,19 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
             exit(1)
         }
         tableAnnotations.reloadData(forRowIndexes: IndexSet(integersIn: 0..<extractValues.count), columnIndexes: IndexSet(4..<6))
+    }
+    
+    @IBAction func toggleTone(_ sender: NSButton) {
+        if (sender.state == NSControl.StateValue.on) {
+            toneEnabled = true
+        } else {
+            toneEnabled = false
+            do {
+                try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(0))
+            } catch {
+                exit(1)
+            }
+        }
     }
     
     @IBAction func uploadROIs(_ sender: Any) {
@@ -2366,13 +2400,15 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
                 }
                 // Give audio output
                 do {
-                    var audio = eScore*audioStep
-                    if (audio) < audioLow {
-                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioLow))
-                    } else if (audio) > audioHigh {
-                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioHigh))
-                    } else {
-                        try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audio))
+                    if toneEnabled {
+                        let audio = eScore*audioStep
+                        if (audio) < audioLow {
+                            try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioLow))
+                        } else if (audio) > audioHigh {
+                            try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audioHigh))
+                        } else {
+                            try ioArduino!.writeTo(bmiAudioPin, analogValue: UInt8(audio))
+                        }
                     }
                 } catch {
                     print("Error in audio output")
@@ -2604,7 +2640,7 @@ class ViewController: NSViewController, AVCaptureFileOutputRecordingDelegate, AV
         e1ROIs = Set<Int>()
         e2ROIs = Set<Int>()
         timeWindow = appPreferences.timeWindow
-        zScoresFramesSmoothed = 15//        appPreferences.zScoresFramesSmoothed
+        zScoresFramesSmoothed = appPreferences.zScoresFramesSmoothed
         activationThreshold = appPreferences.activationThreshold
         resetThreshold = appPreferences.resetThreshold
         ttlPulsePin = appPreferences.ttlPulsePin
