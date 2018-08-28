@@ -6,7 +6,14 @@
 /* MODIFIED by WALIII, based on cobe by Analog and Digital Input and 
 Output Server for MATLA Giampiero Campa, Copyright 2013 The MathWorks, Inc */
 
-
+/* IMPORTANT EXPERIMENTAL DESIGN NOTES
+ *  The VideoCapture MacOS application will define which pin to write the 
+ *  TTL pulse to, and which pin to write the analog audio value to (defined
+ *  as "bmiAudioPin" in the VideoCapture app).
+ *  It is the responsibility of BMIArduino.ino to define the pin which controls
+ *  the speaker (SPEAKER_PIN) and to make sure the BMI_AUDIO_PIN variable in the
+ *  .ino file matches its value in the MacOS app.
+ */
 
 
 /* This file is meant to be used with the MATLAB arduino IO 
@@ -41,18 +48,24 @@ Output Server for MATLA Giampiero Campa, Copyright 2013 The MathWorks, Inc */
 #endif
 
 int SPEAKER_PIN = 4;
+int BMI_AUDIO_PIN = 3;
+//int AUDIO_LOW = 100;
+//int AUDIO_HIGH = 600;
+//int AUDIO_STEP = 2;
+int LED_PIN = 5;
+
 int AUDIO_LOW = 1000;
-int AUDIO_HIGH = 24000;
+int AUDIO_HIGH = 15000;
 int AUDIO_STEP = 92; // Assuming 250 different audio steps
 int STEP = 0;
 
 void setup() {
-  
+  pinMode(LED_PIN, OUTPUT);
   // set PIN13 to PWM to 62khz
-  //int myEraser = 7;             // this is 111 in binary and is used as an eraser
-  //TCCR0B &= ~myEraser;   // this operation (AND plus NOT),  set the three bits in TCCR2B to 0
-  //int myPrescaler = 1;         // this could be a number in [1 , 6]. In this case, 3 corresponds in binary to 011.   
-  //TCCR0B |= myPrescaler;  //this operation (OR), replaces the last three bits in TCCR2B with our new value 011 
+  int myEraser = 7;             // this is 111 in binary and is used as an eraser
+  TCCR0B &= ~myEraser;   // this operation (AND plus NOT),  set the three bits in TCCR2B to 0
+  int myPrescaler = 1;         // this could be a number in [1 , 6]. In this case, 3 corresponds in binary to 011.   
+  TCCR0B |= myPrescaler;  //this operation (OR), replaces the last three bits in TCCR2B with our new value 011 
   /* initialize serial                                       */
   Serial.begin(115200);
 }
@@ -187,7 +200,7 @@ void loop() {
       /* the third received value indicates the value 0 or 1 */
       if (val>47 && val<50) {
         dgv=val-48;                /* calculate value        */
-	digitalWrite(pin,dgv);     /* perform Digital Output */
+	      digitalWrite(pin,dgv);     /* perform Digital Output */
       }
       s=-1;  /* we are done with DO so next state is -1      */
       break; /* s=21 taken care of                           */
@@ -202,7 +215,7 @@ void loop() {
       if (val>96 && val<113) {
         pin=val-97;                /* calculate pin          */
         agv=analogRead(pin);       /* perform Analog Input   */
-	Serial.println(agv);       /* send value via serial  */
+	      Serial.println(agv);       /* send value via serial  */
       }
       s=-1;  /* we are done with AI so next state is -1      */
       break; /* s=30 taken care of                           */
@@ -227,6 +240,17 @@ void loop() {
       case 41:
       /* the third received value indicates the analog value */
       analogWrite(pin,val);        /* perform Analog Output  */
+
+      /* Check to see if the analog write is part of the BMI
+         audio output. */
+      if (pin == BMI_AUDIO_PIN) {
+        if (val == 255) {
+          noTone(SPEAKER_PIN);
+        } else {
+          tone(SPEAKER_PIN, val*AUDIO_STEP + AUDIO_LOW);  
+        }
+      }
+      
       s=-1;  /* we are done with AO so next state is -1      */
       break; /* s=41 taken care of                           */
       
@@ -311,10 +335,6 @@ void loop() {
     } /* end switch on state s                               */
 
   } /* end if serial available                               */
-
-  // Read from AUDIO_INPUT_PIN
-  tone(SPEAKER_PIN, STEP*AUDIO_STEP + AUDIO_LOW);
-  delay(3000);
-  STEP = (STEP + 1)%251;  
+  
 } /* end loop statement                                      */
 
