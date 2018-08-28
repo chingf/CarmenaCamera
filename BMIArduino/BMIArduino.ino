@@ -244,7 +244,7 @@ void loop() {
       /* Check to see if the analog write is part of the BMI
          audio output. */
       if (pin == BMI_AUDIO_PIN) {
-        if (val == 255) {
+        if (val == 0) { /* value 0 kills the tone! */ 
           noTone(SPEAKER_PIN);
         } else {
           tone(SPEAKER_PIN, val*AUDIO_STEP + AUDIO_LOW);  
